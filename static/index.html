@@ -1,0 +1,271 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Hustle Ledger</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:wght@400;700&family=Bricolage+Grotesque:opsz,wght@12..96,700;12..96,800&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --ink: #14261F; --green: #17704F; --green-soft: #E3F1EA; --paper: #F4F6F2; --card: #FFFFFF;
+    --line: #D6DDD6; --muted: #5B6B63; --out: #A4492F; --warn: #8A5A0A; --warn-soft: #FFF3D6;
+  }
+  * { box-sizing: border-box; }
+  body { margin: 0; background: var(--paper); color: var(--ink); font: 400 1rem/1.5 "Atkinson Hyperlegible", system-ui, sans-serif; }
+  :focus-visible { outline: 3px solid var(--green); outline-offset: 2px; }
+  main { width: min(760px, 100% - 2rem); margin: 0 auto; padding: 1.5rem 0 4rem; }
+  header { display: flex; justify-content: space-between; align-items: center; gap: 1rem; flex-wrap: wrap; margin-bottom: 1.5rem; }
+  h1 { font: 800 1.9rem/1 "Bricolage Grotesque", sans-serif; letter-spacing: -0.03em; margin: 0; }
+  h2 { font: 700 1.25rem/1.2 "Bricolage Grotesque", sans-serif; margin: 0 0 0.9rem; }
+  select, input { font: inherit; color: inherit; padding: 0.55rem 0.7rem; border: 1.5px solid var(--line); border-radius: 8px; background: #fff; width: 100%; }
+  label { display: block; font-weight: 700; font-size: 0.9rem; margin-bottom: 0.3rem; }
+  .panel { background: var(--card); border: 1px solid var(--line); border-radius: 14px; padding: 1.25rem; margin-bottom: 1.25rem; }
+
+  .totals { display: grid; grid-template-columns: repeat(3, 1fr); gap: 0.75rem; }
+  .total { padding: 0.9rem 1rem; border-radius: 12px; background: var(--card); border: 1px solid var(--line); }
+  .total span { display: block; font-size: 0.88rem; color: var(--muted); }
+  .total strong { font: 800 clamp(1.15rem, 4vw, 1.6rem)/1.2 "Bricolage Grotesque", sans-serif; }
+  .total.in strong { color: var(--green); }
+  .total.out strong { color: var(--out); }
+
+  .btn { font: 700 1rem "Atkinson Hyperlegible", sans-serif; padding: 0.75rem 1.1rem; border-radius: 10px; border: 2px solid var(--green); background: var(--green); color: #fff; cursor: pointer; }
+  .btn.ghost { background: transparent; color: var(--green); }
+  .btn:disabled { opacity: 0.6; cursor: wait; }
+  .row { display: flex; gap: 0.6rem; flex-wrap: wrap; }
+  .scan-drop { display: block; border: 2px dashed var(--green); border-radius: 12px; padding: 1.6rem 1rem; text-align: center; cursor: pointer; background: var(--green-soft); }
+  .scan-drop strong { display: block; font-size: 1.1rem; }
+  .scan-drop input { position: absolute; width: 1px; height: 1px; opacity: 0; }
+  .status { margin: 0.8rem 0 0; color: var(--muted); min-height: 1.5em; }
+  .status.error { color: var(--out); font-weight: 700; }
+
+  .review { display: grid; grid-template-columns: 150px 1fr; gap: 1.25rem; margin-top: 1rem; }
+  .review img { width: 100%; border-radius: 8px; border: 1px solid var(--line); }
+  .fields { display: grid; grid-template-columns: 1fr 1fr; gap: 0.8rem; }
+  .fields .wide { grid-column: 1 / -1; }
+  .hint { font-size: 0.85rem; color: var(--muted); margin-top: 0.25rem; }
+  .hint.check { color: var(--warn); background: var(--warn-soft); padding: 0.15rem 0.45rem; border-radius: 6px; display: inline-block; }
+  .kind { display: flex; border: 1.5px solid var(--line); border-radius: 8px; overflow: hidden; }
+  .kind label { flex: 1; margin: 0; text-align: center; padding: 0.55rem; cursor: pointer; font-weight: 700; }
+  .kind input { position: absolute; opacity: 0; width: 1px; }
+  .kind input:checked + span { color: #fff; }
+  .kind label:has(input:checked) { background: var(--ink); color: #fff; }
+  .kind label:has(input:focus-visible) { outline: 3px solid var(--green); outline-offset: -3px; }
+
+  .bars { display: grid; gap: 0.6rem; }
+  .bar { display: grid; grid-template-columns: 9.5rem 1fr 6.5rem; gap: 0.75rem; align-items: center; font-size: 0.95rem; }
+  .bar .track { height: 0.8rem; background: var(--green-soft); border-radius: 99px; overflow: hidden; }
+  .bar .fill { height: 100%; background: var(--green); border-radius: 99px; }
+  .bar .amt { text-align: right; font-variant-numeric: tabular-nums; }
+
+  table { width: 100%; border-collapse: collapse; font-size: 0.95rem; }
+  th, td { text-align: left; padding: 0.6rem 0.4rem; border-bottom: 1px solid var(--line); }
+  th { font-size: 0.85rem; color: var(--muted); }
+  td.num { text-align: right; font-variant-numeric: tabular-nums; white-space: nowrap; }
+  td.in { color: var(--green); font-weight: 700; }
+  .del { background: none; border: none; color: var(--muted); cursor: pointer; font-size: 1.1rem; padding: 0.2rem 0.4rem; }
+  .del:hover { color: var(--out); }
+  .empty { color: var(--muted); margin: 0; }
+  [hidden] { display: none !important; }
+
+  @media (max-width: 600px) {
+    .totals { grid-template-columns: 1fr 1fr; }
+    .totals .net { grid-column: 1 / -1; }
+    .review { grid-template-columns: 1fr; }
+    .review img { max-height: 220px; object-fit: contain; }
+    .bar { grid-template-columns: 7rem 1fr 5.5rem; }
+    .hide-sm { display: none; }
+  }
+</style>
+</head>
+<body>
+<main>
+  <header>
+    <h1>Hustle Ledger</h1>
+    <div style="min-width: 11rem">
+      <label for="month">Month</label>
+      <select id="month"></select>
+    </div>
+  </header>
+
+  <div class="totals" aria-live="polite">
+    <div class="total in"><span>Money in</span><strong id="t-in">R0.00</strong></div>
+    <div class="total out"><span>Money out</span><strong id="t-out">R0.00</strong></div>
+    <div class="total net"><span>Left over</span><strong id="t-net">R0.00</strong></div>
+  </div>
+
+  <section class="panel" style="margin-top: 1.25rem" aria-labelledby="add-h">
+    <h2 id="add-h">Add a transaction</h2>
+    <label class="scan-drop" for="photo">
+      <strong>Scan a receipt or payment slip</strong>
+      Take a photo or choose one. Fit the whole slip in the frame.
+      <input type="file" id="photo" accept="image/*" capture="environment">
+    </label>
+    <div class="row" style="margin-top: 0.75rem">
+      <button class="btn ghost" type="button" id="manual">Add cash or a payment without a slip</button>
+    </div>
+    <p class="status" id="status" role="status"></p>
+
+    <form id="review" class="review" hidden>
+      <img id="preview" alt="The photo you scanned">
+      <div>
+        <div class="fields">
+          <div class="wide">
+            <span class="kind" role="radiogroup" aria-label="Money in or out">
+              <label><input type="radio" name="kind" value="expense" checked><span>Money out</span></label>
+              <label><input type="radio" name="kind" value="income"><span>Money in</span></label>
+            </span>
+          </div>
+          <div class="wide">
+            <label for="f-merchant">Shop or payer</label>
+            <input id="f-merchant" required maxlength="80">
+          </div>
+          <div>
+            <label for="f-amount">Amount (R)</label>
+            <input id="f-amount" type="number" step="0.01" min="0.01" required inputmode="decimal">
+          </div>
+          <div>
+            <label for="f-date">Date</label>
+            <input id="f-date" type="date" required>
+          </div>
+          <div class="wide">
+            <label for="f-category">Category</label>
+            <select id="f-category"></select>
+            <p class="hint" id="cat-hint"></p>
+          </div>
+        </div>
+        <p class="hint" id="check-hint"></p>
+        <div class="row" style="margin-top: 0.9rem">
+          <button class="btn" type="submit">Save to ledger</button>
+          <button class="btn ghost" type="button" id="discard">Discard</button>
+        </div>
+      </div>
+    </form>
+  </section>
+
+  <section class="panel" aria-labelledby="cat-h">
+    <h2 id="cat-h">Where the money went</h2>
+    <div class="bars" id="bars"></div>
+  </section>
+
+  <section class="panel" aria-labelledby="tx-h">
+    <h2 id="tx-h">Transactions</h2>
+    <table>
+      <thead><tr><th>Date</th><th>Shop or payer</th><th class="hide-sm">Category</th><th style="text-align:right">Amount</th><th><span class="hide-sm">Delete</span></th></tr></thead>
+      <tbody id="rows"></tbody>
+    </table>
+    <p class="empty" id="no-rows">Nothing recorded this month yet. Scan a receipt to start.</p>
+  </section>
+</main>
+
+<script>
+const $ = id => document.getElementById(id);
+const rand = n => 'R' + Number(n).toLocaleString('en-ZA', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+let suggested = null, source = 'scan', categories = [];
+
+async function api(path, opts) {
+  const res = await fetch(path, opts);
+  if (!res.ok) {
+    const body = await res.json().catch(() => ({}));
+    if (body.detail && typeof body.detail === 'string') throw new Error(body.detail);
+    throw new Error(res.status >= 500 ? 'The server hit an error reading this photo. Check the terminal running the app for details.' : 'Some details are missing or invalid. Check the fields and try again.');
+  }
+  return res.status === 204 ? null : res.json();
+}
+
+function thisMonth() { return new Date().toISOString().slice(0, 7); }
+function monthName(m) { const [y, mo] = m.split('-'); return new Date(y, mo - 1).toLocaleDateString('en-ZA', { month: 'long', year: 'numeric' }); }
+
+async function loadMonths() {
+  const months = new Set([thisMonth(), ...(await api('/api/months'))]);
+  const sel = $('month'), current = sel.value || thisMonth();
+  sel.innerHTML = [...months].sort().reverse().map(m => `<option value="${m}">${monthName(m)}</option>`).join('');
+  sel.value = current;
+}
+
+async function refresh() {
+  const m = $('month').value;
+  const [sum, rows] = await Promise.all([api('/api/summary?month=' + m), api('/api/transactions?month=' + m)]);
+  $('t-in').textContent = rand(sum.income); $('t-out').textContent = rand(sum.spent);
+  $('t-net').textContent = rand(sum.net); $('t-net').style.color = sum.net < 0 ? 'var(--out)' : 'var(--ink)';
+  const cats = Object.entries(sum.by_category), max = Math.max(1, ...cats.map(c => c[1]));
+  $('bars').innerHTML = cats.length ? cats.map(([c, v]) => `
+    <div class="bar"><span>${esc(c)}</span><div class="track" role="img" aria-label="${esc(c)} ${rand(v)}"><div class="fill" style="width:${(v / max * 100).toFixed(1)}%"></div></div><span class="amt">${rand(v)}</span></div>`).join('')
+    : '<p class="empty">No spending recorded this month.</p>';
+  $('rows').innerHTML = rows.map(r => `
+    <tr><td>${r.date.slice(8)}/${r.date.slice(5, 7)}</td><td>${esc(r.merchant)}</td><td class="hide-sm">${esc(r.category)}</td>
+    <td class="num ${r.kind === 'income' ? 'in' : ''}">${r.kind === 'income' ? '+' : '−'}${rand(r.amount)}</td>
+    <td><button class="del" data-id="${r.id}" aria-label="Delete ${esc(r.merchant)} ${rand(r.amount)}">✕</button></td></tr>`).join('');
+  $('no-rows').hidden = rows.length > 0;
+}
+
+function esc(s) { return String(s).replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c])); }
+
+function setStatus(msg, error = false) { $('status').textContent = msg; $('status').className = 'status' + (error ? ' error' : ''); }
+
+function fillCategories(selected) {
+  $('f-category').innerHTML = categories.map(c => `<option${c === selected ? ' selected' : ''}>${esc(c)}</option>`).join('');
+}
+
+function openReview(d, imgUrl) {
+  $('review').hidden = false;
+  $('preview').hidden = !imgUrl; if (imgUrl) $('preview').src = imgUrl;
+  document.querySelector(`input[name=kind][value=${d.kind || 'expense'}]`).checked = true;
+  $('f-merchant').value = d.merchant || ''; $('f-amount').value = d.amount ?? '';
+  $('f-date').value = d.date || new Date().toISOString().slice(0, 10);
+  suggested = d.category || null; fillCategories(d.category || categories[0]);
+  $('cat-hint').textContent = d.category_confidence != null
+    ? (d.category_confidence < 0.4 ? 'Best guess. Change it if it\'s wrong and the ledger will learn.' : 'Suggested from the shop name.')
+    : '';
+  const missing = ['merchant', 'amount', 'date'].filter(k => d[k] == null && source === 'scan');
+  $('check-hint').textContent = missing.length ? `Couldn't read the ${missing.join(' or ').replace('merchant', 'shop name')}. Please fill it in.` : (source === 'scan' ? 'Check the details against the slip before saving.' : '');
+  $('check-hint').className = 'hint' + (missing.length ? ' check' : '');
+  (missing.length ? $('f-' + missing[0]) : $('f-amount')).focus();
+}
+
+$('photo').addEventListener('change', async e => {
+  const file = e.target.files[0]; if (!file) return;
+  source = 'scan'; $('review').hidden = true; setStatus('Reading the slip…');
+  const form = new FormData(); form.append('file', file);
+  try {
+    const d = await api('/api/scan', { method: 'POST', body: form });
+    setStatus(`Read the slip (${Math.round(d.ocr_confidence)}% text confidence). Review the details below.`);
+    openReview(d, URL.createObjectURL(file));
+  } catch (err) { setStatus(err.message, true); }
+  e.target.value = '';
+});
+
+$('manual').addEventListener('click', () => { source = 'manual'; setStatus(''); openReview({ kind: 'income', category: 'Income' }, null); });
+$('discard').addEventListener('click', () => { $('review').hidden = true; setStatus('Discarded. Nothing was saved.'); });
+
+document.querySelectorAll('input[name=kind]').forEach(r => r.addEventListener('change', () => {
+  if (r.checked && r.value === 'income') $('f-category').value = 'Income';
+}));
+
+$('review').addEventListener('submit', async e => {
+  e.preventDefault();
+  const tx = {
+    kind: document.querySelector('input[name=kind]:checked').value, merchant: $('f-merchant').value.trim(),
+    amount: parseFloat($('f-amount').value), date: $('f-date').value, category: $('f-category').value,
+    suggested_category: suggested, source,
+  };
+  try {
+    await api('/api/transactions', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(tx) });
+    $('review').hidden = true;
+    const learned = suggested && suggested !== tx.category && tx.kind === 'expense';
+    setStatus(`Saved ${tx.merchant}, ${rand(tx.amount)}.` + (learned ? ` The ledger will now file ${tx.merchant} under ${tx.category}.` : ''));
+    $('month').value = tx.date.slice(0, 7); await loadMonths(); $('month').value = tx.date.slice(0, 7); await refresh();
+  } catch (err) { setStatus(err.message, true); }
+});
+
+$('rows').addEventListener('click', async e => {
+  const b = e.target.closest('.del'); if (!b) return;
+  await api('/api/transactions/' + b.dataset.id, { method: 'DELETE' }); await refresh();
+});
+$('month').addEventListener('change', refresh);
+
+(async () => { categories = await api('/api/categories'); await loadMonths(); await refresh(); })();
+</script>
+</body>
+</html>

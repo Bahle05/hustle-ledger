@@ -1,0 +1,38 @@
+{
+  "shoprite.jpg": {
+    "merchant": "Shoprite",
+    "date": "2026-11-03",
+    "amount": 287.45,
+    "kind": "expense"
+  },
+  "kfc.jpg": {
+    "merchant": "KFC",
+    "date": "2026-11-07",
+    "amount": 89.9,
+    "kind": "expense"
+  },
+  "clicks.jpg": {
+    "merchant": "Clicks",
+    "date": "2026-11-12",
+    "amount": 154.97,
+    "kind": "expense"
+  },
+  "engen.jpg": {
+    "merchant": "Engen",
+    "date": "2026-11-15",
+    "amount": 450.0,
+    "kind": "expense"
+  },
+  "vodacom.jpg": {
+    "merchant": "Vodacom",
+    "date": "2026-11-16",
+    "amount": 99.0,
+    "kind": "expense"
+  },
+  "payment_received.jpg": {
+    "merchant": "Capitec",
+    "date": "2026-11-10",
+    "amount": 1500.0,
+    "kind": "income"
+  }
+}

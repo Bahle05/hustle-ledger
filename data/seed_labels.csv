@@ -1,0 +1,85 @@
+text,category
+Shoprite groceries bread milk,Groceries
+Checkers Hyper fresh produce,Groceries
+Pick n Pay family store,Groceries
+Spar supermarket,Groceries
+Woolworths Food,Groceries
+Boxer superstores,Groceries
+Food Lover's Market,Groceries
+Usave,Groceries
+Makro bulk groceries,Groceries
+spaza shop maize meal sugar,Groceries
+bread milk eggs,Groceries
+rice cooking oil chicken pieces,Groceries
+KFC streetwise,Eating out
+McDonald's big mac meal,Eating out
+Nando's quarter chicken,Eating out
+Steers burger,Eating out
+Debonairs pizza,Eating out
+Wimpy breakfast,Eating out
+Chicken Licken soul food,Eating out
+Roman's Pizza,Eating out
+Fishaways,Eating out
+Galito's,Eating out
+Burger King,Eating out
+Spur steak ranch,Eating out
+kota and chips,Eating out
+coffee shop cappuccino,Eating out
+Engen fuel petrol,Transport
+Shell garage fuel,Transport
+BP petrol,Transport
+Sasol fuel 95 unleaded,Transport
+TotalEnergies diesel,Transport
+Caltex fuel,Transport
+Uber trip,Transport
+Bolt ride,Transport
+Golden Arrow bus ticket,Transport
+MyCiTi bus myconnect,Transport
+taxi fare,Transport
+Metrorail train ticket,Transport
+Vodacom airtime,Airtime and data
+MTN data bundle,Airtime and data
+Cell C airtime recharge,Airtime and data
+Telkom mobile data,Airtime and data
+Rain unlimited data,Airtime and data
+prepaid airtime voucher,Airtime and data
+Clicks pharmacy,Health and pharmacy
+Dis-Chem pharmacy,Health and pharmacy
+Medirite pharmacy,Health and pharmacy
+pharmacy medication prescription,Health and pharmacy
+doctor consultation clinic,Health and pharmacy
+Pep clothing,Clothing
+Ackermans,Clothing
+Mr Price apparel,Clothing
+Truworths fashion,Clothing
+Edgars,Clothing
+Jet stores,Clothing
+Cotton On,Clothing
+Markham menswear,Clothing
+Sportscene sneakers,Clothing
+prepaid electricity token,Utilities
+City of Cape Town municipal account,Utilities
+Eskom electricity,Utilities
+water and lights account,Utilities
+rent payment landlord,Utilities
+Van Schaik textbooks,Education
+CNA stationery,Education
+university tuition fees,Education
+course registration fee,Education
+Udemy online course,Education
+Ster-Kinekor movie tickets,Entertainment
+Nu Metro cinema,Entertainment
+Netflix subscription,Entertainment
+Showmax subscription,Entertainment
+DStv subscription,Entertainment
+Spotify premium,Entertainment
+Takealot online order,Shopping
+Game stores,Shopping
+salary payment received,Income
+payment received from client,Income
+you have received money,Income
+deposit credited to account,Income
+stipend allowance,Income
+NSFAS allowance credited,Income
+tutoring payment received,Income
+freelance invoice paid,Income
